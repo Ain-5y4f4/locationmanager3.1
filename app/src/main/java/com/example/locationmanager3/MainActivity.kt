@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity(), LocationListener {
     private var accuracy by mutableStateOf("--")
     private var providerName by mutableStateOf("--")
     private var time by mutableStateOf("--")
+    private var speed by mutableStateOf("--") // Added for Task 5.3
 
     private var isGPSEnabled by mutableStateOf(false)
     private var isLocationActive by mutableStateOf(false)  // Toggle ON/OFF
@@ -94,7 +95,7 @@ class MainActivity : ComponentActivity(), LocationListener {
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Tasks 5.1 & 5.2",
+                                    text = "Tasks 5.1, 5.2 & 5.3",
                                     fontSize = 14.sp,
                                     color = Color.White.copy(alpha = 0.8f)
                                 )
@@ -193,7 +194,7 @@ class MainActivity : ComponentActivity(), LocationListener {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Location Info Card (Task 5.2)
+                        // Location Info Card (Tasks 5.2 & 5.3)
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
@@ -218,6 +219,7 @@ class MainActivity : ComponentActivity(), LocationListener {
                                 LocationDetailRow("Longitude:", longitude)
                                 LocationDetailRow("Altitude:", if (altitude != "--") "$altitude m" else altitude)
                                 LocationDetailRow("Accuracy:", if (accuracy != "--") "±$accuracy m" else accuracy)
+                                LocationDetailRow("Speed:", speed) // Task 5.3 Speed display
                                 LocationDetailRow("Provider:", providerName)
                                 LocationDetailRow("Time:", time)
                             }
@@ -368,6 +370,7 @@ class MainActivity : ComponentActivity(), LocationListener {
         accuracy = "--"
         providerName = "--"
         time = "--"
+        speed = "--" // Cleared for Task 5.3
 
         Toast.makeText(this, "🔴 Location service deactivated", Toast.LENGTH_SHORT).show()
     }
@@ -439,6 +442,7 @@ class MainActivity : ComponentActivity(), LocationListener {
             accuracy = "--"
             providerName = "--"
             time = "--"
+            speed = "--" // Cleared for Task 5.3
 
             Toast.makeText(this, "❌ Unable to get location. Try moving to an open area.", Toast.LENGTH_LONG).show()
         }
@@ -452,7 +456,16 @@ class MainActivity : ComponentActivity(), LocationListener {
         altitude = String.format("%.2f", location.altitude)
         accuracy = String.format("%.2f", location.accuracy)
 
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        // Task 5.3: Track Speed (converted from m/s to km/h)
+        if (location.hasSpeed()) {
+            val speedKmh = location.speed * 3.6
+            speed = String.format("%.2f km/h", speedKmh)
+        } else {
+            speed = "0.00 km/h"
+        }
+
+        // Task 5.3: Format the date string as requested
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         time = sdf.format(Date(location.time))
     }
 
